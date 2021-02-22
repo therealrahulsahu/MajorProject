@@ -1,0 +1,7 @@
+Flask==1.1.2
+gunicorn==20.0.4
+pymongo==3.10.1
+pandas==0.24.2
+numpy==1.16.2
+scikit-learn==0.20.3
+dnspython==2.0.0

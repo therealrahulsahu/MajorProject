@@ -1,0 +1,225 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <script>
+        function result_quote(c_level, d_name, d_about, d_treatment, d_doctor) {
+            let result = "";
+            result += "<div class='section-top-border'>";
+            result += "<h3 style='color : white' class='mb-30'>Your Result</h3>";
+            result += "<div class='row'>";
+            result += "<div class='col-lg-12'>";
+            result += "<blockquote class='generic-blockquote'>";
+            result += "<h3>Disease : "+d_name+"</h3>";
+            result += "<h3>With Probability : "+Math.round(c_level*100)/100+"</h3>";
+            result += "<h3><a href='"+d_about+"'>About Disease</a></h3>";
+            result += "<h3><a href='"+d_treatment+"'>Get Treatment Details</a></h3>";
+            result += "<h3><a href='"+d_doctor+"'>Consult Doctor</a></h3>";
+            result += "</blockquote>";
+            result += "</div>";
+            result += "</div>";
+            result += "</div>";
+            return result;
+        }
+        function final_results(node) {
+            const xhttp = new XMLHttpRequest();
+            let array = [];
+            let checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+            for (let i = 0; i < checkboxes.length; i++) {
+              array.push(checkboxes[i].value);
+            }
+            let query = JSON.stringify(array);
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const fetched_data = JSON.parse(this.responseText);
+                    let c_level = fetched_data.c_level;
+                    let d_name = fetched_data.disease;
+                    let d_about = fetched_data.about;
+                    let d_treatment = fetched_data.treatment;
+                    let d_doctor = fetched_data.doctor;
+                    document.getElementById('final_result').innerHTML = result_quote(c_level, d_name, d_about, d_treatment, d_doctor);
+                }
+              };
+            xhttp.open("POST", "/predict/final_result", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("node="+node+"&d_list="+query);
+        }
+        function check_box(text, id) {
+            let result = "";
+            result += "<div class='switch-wrap d-flex justify-content-between'>";
+            result += "<p style='color: white'>";
+            result += text;
+            result += "</p>";
+            result += "<div class='primary-checkbox'>";
+            result += "<input value='"+text+"' type='checkbox' id='";
+            result += id;
+            result += "' checked><label for='";
+            result += id;
+            result += "'></label>";
+            result += "</div></div>";
+            return result;
+        }
+        function present_may_have(current_data) {
+            let result = "<h3 style='color: white'>Confirm Other Symptoms</h3>";
+            let name;
+            for(name in current_data.may_be_list){
+                result += check_box(current_data.may_be_list[name], current_data.may_be_list[name]);
+            }
+            result += "<div class='button-group-area mt-40'>";
+            result += "<button onclick='final_results("+current_data.node+")' class='genric-btn primary e-large'>Get Results</button>";
+            result += "</div>";
+            document.getElementById('confirmation').innerHTML = result;
+        }
+        function selected_decision(decision, node) {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const fetched_data = JSON.parse(this.responseText);
+                    if(fetched_data.final==0){
+                        let result = "<h3 style='color: white'>Do You Have : ";
+                        result += fetched_data.name;
+                        result += "</h3>";
+                        result += "<div class='button-group-area mt-10'>";
+                        result += "<a onclick='selected_decision(true, "+fetched_data.node+");' class='genric-btn success-border circle'>Yes</a>";
+                        result += "<a onclick='selected_decision(false, "+fetched_data.node+");' class='genric-btn danger-border circle'>No</a>";
+                        result += "</div>";
+                        document.getElementById('yes_or_no').innerHTML = result;
+                    }else{
+                        present_may_have(fetched_data);
+                    }
+                    document.getElementById('final_result').innerHTML = "";
+                }
+              };
+            xhttp.open("POST", "/predict/second_iter", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("decision="+decision+"&node="+node);
+        }
+        function add_yes_or_no() {
+            const xhttp = new XMLHttpRequest();
+            let d_name = document.getElementById('disease_list').value;
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const fetched_data = JSON.parse(this.responseText);
+                    let result = "";
+                    if(fetched_data.final == -1){
+                        result += "<h3 style='color: white'>Please Select A Disease !</h3>";
+                        document.getElementById('confirmation').innerHTML = "";
+                    }else if(fetched_data.final == 0){
+                        result += "<h3 style='color: white'>Do You Have : ";
+                        result += fetched_data.name;
+                        result += "</h3>";
+                        result += "<div class='button-group-area mt-10'>";
+                        result += "<a onclick='selected_decision(true, "+fetched_data.node+");' class='genric-btn success-border circle'>Yes</a>";
+                        result += "<a onclick='selected_decision(false, "+fetched_data.node+");' class='genric-btn danger-border circle'>No</a>";
+                        result += "</div>";
+                        document.getElementById('confirmation').innerHTML = "";
+                    }else{
+                        present_may_have(fetched_data);
+                    }
+                    document.getElementById('final_result').innerHTML = "";
+                    document.getElementById('yes_or_no').innerHTML = result;
+                }
+              };
+            xhttp.open("POST", "/predict/first_iter", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send("d_name="+d_name);
+        }
+        function add_drop_down() {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const fetched_data = JSON.parse(this.responseText);
+                    let result = "<h2>Select A Symptom</h2>";
+                    result += "<div class='form-group col-md-12'>";
+                    result += "<input class='form-control' type='text' required placeholder='Select One' name='disease_list' id='disease_list' list='d_list'/>";
+                    result += "<datalist id='d_list'>";
+                    let op_list = "";
+                    let name;
+                    for(name in fetched_data.result){
+                        op_list += "<option value='" + fetched_data.result[name] + "'>";
+                    }
+                    result += op_list;
+                    result += "</datalist>";
+                    result += "</div>";
+                    result += "<div class='button-group-area mt-40'>";
+                    result += "<button onclick='add_yes_or_no();' class='genric-btn primary e-large'>Proceed</button>";
+                    result += "</div>";
+                    document.getElementById('drop_down').innerHTML = result;
+                }
+              };
+            xhttp.open("POST", "/predict/first_list", true);
+            xhttp.send();
+        }
+        function user_check(username, password) {
+            //console.log(username, password);
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const fetched_data = JSON.parse(this.responseText);
+                    try{
+                        if(fetched_data.valid){
+                            add_drop_down();
+                        }else{
+                            alert('Invalid Password');
+                        }
+                    }catch(err){
+                        alert('Invalid Password');
+                    }
+
+                }
+              };
+            xhttp.open("POST", "/user_login", true);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            let data = "username="+username+"&password="+password;
+            console.log(data);
+            xhttp.send(data);
+        }
+
+    </script>
+    <!--::Symptoms input::-->
+    <section class="regervation_part section_padding">
+        <div class="container">
+            <div style="min-height: 460px" class="row align-items-center regervation_content">
+                <div class="col-lg-7">
+                    <div id="drop_down" class="regervation_part_iner">
+                        <!--<div class="col-lg-8">
+                                <div class="row">
+                                  <div class="col-6">
+                                    <div class="form-group">
+                                      <input class="form-control" name="username" id="username" type="text" onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Username'" placeholder='Username' minlength="8" maxlength="32"/>
+                                    </div>
+                                  </div>
+                                  <div class="col-6">
+                                    <div class="form-group">
+                                      <input class="form-control" name="password" id="password" type="password" onfocus="this.placeholder = ''"
+                                        onblur="this.placeholder = 'Password'" placeholder='Password' minlength="8" maxlength="32"/>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="form-group mt-3">
+                                  <button onclick="user_check(document.getElementById('username').value, document.getElementById('password').value)" class="button button-contactForm btn_1">Start Now</button>
+                                </div>
+                        </div>-->
+                        <div class="button-group-area mt-40">
+                            <button onclick="add_drop_down();" class='genric-btn primary e-large'>Start Now</button>
+			            </div>
+                    </div>
+                    <br>
+                    <div id="yes_or_no" class="regervation_part_iner"></div>
+                    <br>
+                    <div id="confirmation" class="regervation_part_iner"></div>
+                    <br>
+                    <div id="final_result" class="regervation_part_iner"></div>
+                </div>
+                <div class="col-lg-5 col-md-6">
+                    <div style="display: none" class="reservation_img">
+                        <img src="{{ url_for('static', filename='img/reservation.png') }}" alt="" class="reservation_img_iner">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--::Symptoms end here::-->
+
+
+{% endblock %}

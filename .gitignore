@@ -1,0 +1,5 @@
+Documentation/
+pg_master_1/
+__pycache__/
+ML/__pycache__/
+.idea/
