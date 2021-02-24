@@ -110,8 +110,16 @@ class PredictDisease:
         red_cols = self.reduced_data.columns
         symptoms_given = red_cols[self.reduced_data.loc[present_disease].values[0].nonzero()]
 
+        def prob_to_1(number):
+            if number >= 1:
+                return 0.99
+            elif number < 0.1:
+                return 0.1
+            else:
+                return number
+
         return {
             'final': int(2),
             'disease': present_disease[0],
-            'c_level': float((1.0 * len(symptoms_present) / len(symptoms_given)))
+            'c_level': prob_to_1(float((1.0 * len(symptoms_present) / len(symptoms_given))))
         }

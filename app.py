@@ -57,7 +57,7 @@ def add_user():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        add_user(username, password)
+        addUser(username, password)
         result = {'status': 'success'}
         return json.dumps(result)
 
