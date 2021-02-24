@@ -24,7 +24,7 @@ def fetchDataset():
     return fetched
 
 data_model = PredictDisease()
-data_model.read_data_web(fetchDataset())
+data_model.read_data_web_csv()
 
 def getLinks(dname):
     table = DB["remedies"]
