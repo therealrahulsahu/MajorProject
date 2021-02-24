@@ -14,11 +14,17 @@ hostname = socket.gethostname()
 ip_addr = socket.gethostbyname(hostname)
 
 app = Flask(__name__)
-data_model = PredictDisease()
+
 
 app.my_ip = ip_addr
 app.my_port = 80
 
+def fetchDataset():
+    fetched = list(DB['dataset'].find({},{'_id':0}))
+    return fetched
+
+data_model = PredictDisease()
+data_model.read_data_web(fetchDataset())
 
 def getLinks(dname):
     table = DB["remedies"]

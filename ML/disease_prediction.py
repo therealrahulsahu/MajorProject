@@ -6,9 +6,22 @@ from sklearn.tree._tree import TREE_UNDEFINED
 
 
 class PredictDisease:
+    def read_system_csv(self):
+        fetched = pd.read_csv('ML\\training.csv')
+        self.start(fetched)
+
+    def read_data_web_csv(self):
+        fetched = pd.read_csv('https://raw.githubusercontent.com/therealrahulsahu/MajorProject/master/ML/training.csv?token=AKMU2BQARK7V5PRRDOBXINTAHUV4I')
+        self.start(fetched)
+    
+    def read_data_web(self, fetched):
+        fetched = pd.DataFrame(fetched)
+        self.start(fetched)
+
     def __init__(self):
-        # training = pd.read_csv('ML\\training.csv')
-        training = pd.read_csv('https://raw.githubusercontent.com/therealrahulsahu/MajorProject/master/ML/training.csv?token=AKMU2BQARK7V5PRRDOBXINTAHUV4I')
+        pass
+
+    def start(self, training):
         feature_names = training.columns[:-1]
         x = training[feature_names]
         y = training['prognosis']
