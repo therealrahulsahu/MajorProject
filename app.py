@@ -5,7 +5,9 @@ import socket
 import dns
 from pymongo import MongoClient
 
-myclient = MongoClient("mongodb+srv://user12:w9jTSFswVHlOToRm@cluster0.fjcc4.mongodb.net/check_my_disease?retryWrites=true&w=majority")
+mn_r = "mongodb+srv://therealrahulsahu:rahulsahu1_@democluster.2u6fb.gcp.mongodb.net/check_my_disease?retryWrites=true&w=majority"
+mn_y = "mongodb+srv://user12:w9jTSFswVHlOToRm@cluster0.fjcc4.mongodb.net/check_my_disease?retryWrites=true&w=majority"
+myclient = MongoClient(mn_y)
 DB = myclient["check_my_disease"]
 
 hostname = socket.gethostname()

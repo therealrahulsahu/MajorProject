@@ -8,7 +8,7 @@ from sklearn.tree._tree import TREE_UNDEFINED
 class PredictDisease:
     def __init__(self):
         # training = pd.read_csv('ML\\training.csv')
-        training = pd.read_csv('https://raw.githubusercontent.com/yogendrasharma065/CheckMyDisease/master/ML/training.csv')
+        training = pd.read_csv('https://raw.githubusercontent.com/therealrahulsahu/MajorProject/master/ML/training.csv?token=AKMU2BQARK7V5PRRDOBXINTAHUV4I')
         feature_names = training.columns[:-1]
         x = training[feature_names]
         y = training['prognosis']
