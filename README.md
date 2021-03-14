@@ -1,8 +1,7 @@
-# MinorProject
+# Major Project
 Pharma Guide
 
 Language Used : Python3.7
-Package needed : flask, pandas, numpy, sklearn, socket, json
+Package needed : flask, pandas, numpy, sklearn, socket, json, pymongo (MongoDB)
 
-To Run : Run file app.py using python interpreter (python app.py)
-          Then enter system IPv4 address in browser to open application site.
+To Run Click : https://d-predictor-rahul.herokuapp.com/
