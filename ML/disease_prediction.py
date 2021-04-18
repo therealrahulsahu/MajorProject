@@ -11,7 +11,7 @@ class PredictDisease:
         self.start(fetched)
 
     def read_data_web_csv(self):
-        fetched = pd.read_csv('https://raw.githubusercontent.com/therealrahulsahu/MajorProject/master/ML/training.csv?token=AKMU2BQARK7V5PRRDOBXINTAHUV4I')
+        fetched = pd.read_csv('https://raw.githubusercontent.com/therealrahulsahu/MajorProject/master/ML/training.csv?token=AKMU2BWJCL343AV3UQ5TLUDAQVVEG')
         self.start(fetched)
     
     def read_data_web(self, fetched):
